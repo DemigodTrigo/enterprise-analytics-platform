@@ -38,7 +38,7 @@ auth-service (Spring Boot)
         |
 master-data-service (Spring Boot)
         |
-        |  PostgreSQL + Redis
+        |  H2Databse + Redis
         |
 analytics-engine
 
@@ -194,6 +194,23 @@ cd frontend-react
 npm install
 npm start
 -----------------------------------------------------------------------------------------
+
+🐳 Docker Setup
+
+Run the entire system:
+
+docker-compose up --build
+
+
+Services:
+
+Redis → 6379
+
+Auth Service → 8080
+
+Master Data → 8081
+
+Frontend → 3000
 
 **Enterprise Analytics Platform**
 Built a secure, Redis-cached analytics system with startup-loaded master data, JWT authentication, role-based access control, backend-driven chart APIs, and interactive React dashboards using Spring Boot, Redis, PostgreSQL, and React.
