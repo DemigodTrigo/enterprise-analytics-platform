@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: ea-postgres
+    environment:
+      POSTGRES_DB: analyticsdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: ea-redis
+    ports:
+      - "6379:6379"
+
+  auth-service:
+    build: ./auth-service
+    container_name: ea-auth
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+  ea-masterdata:
+    build: ./master-data-service
+    container_name: ea-masterdata
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./frontend-react
+    container_name: ea-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - ea-masterdata
