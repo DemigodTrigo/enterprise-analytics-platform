@@ -1,0 +1,40 @@
+package com.enterprise.analytics.masterdata.loader;
+
+import com.enterprise.analytics.masterdata.domain.entity.StatusEntity;
+import com.enterprise.analytics.masterdata.repository.StatusRepository;
+import com.enterprise.analytics.masterdata.service.MasterCacheService;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class StatusDataLoader {
+
+    @Bean
+    CommandLineRunner loadStatuses(StatusRepository statusRepository,  MasterCacheService cacheService) {
+        return args -> {
+            insertIfMissing(statusRepository, "CREATED", "Created");
+            insertIfMissing(statusRepository, "CONFIRMED", "Confirmed");
+            insertIfMissing(statusRepository, "CANCELLED", "Cancelled");
+
+            cacheService.refreshStatusCache();
+        };
+    }
+
+    private void insertIfMissing(
+            StatusRepository repository,
+            String code,
+            String description
+    ) {
+        repository.findByCode(code)
+                .orElseGet(() ->
+                        repository.save(
+                                StatusEntity.builder()
+                                        .code(code)
+                                        .description(description)
+                                        .active(true)
+                                        .build()
+                        )
+                );
+    }
+}

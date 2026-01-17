@@ -1,0 +1,48 @@
+package com.enterprise.analytics.masterdata.loader;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import com.enterprise.analytics.masterdata.domain.entity.BookingEntity;
+import com.enterprise.analytics.masterdata.repository.BookingRepository;
+
+
+import java.time.LocalDate;
+import java.util.List;
+
+    @Configuration
+    public class BookingDataLoader {
+
+        @Bean
+        CommandLineRunner loadBookings(BookingRepository repository) {
+            return args -> {
+                if (repository.count() == 0) {
+                    repository.saveAll(List.of(
+                            BookingEntity.builder()
+                                    .countryCode("IN")
+                                    .productCode("FLIGHT")
+                                    .statusCode("CONFIRMED")
+                                    .amount(12000.0)
+                                    .bookingDate(LocalDate.now().minusDays(2))
+                                    .build(),
+
+                            BookingEntity.builder()
+                                    .countryCode("US")
+                                    .productCode("HOTEL")
+                                    .statusCode("CREATED")
+                                    .amount(18000.0)
+                                    .bookingDate(LocalDate.now().minusDays(1))
+                                    .build(),
+
+                            BookingEntity.builder()
+                                    .countryCode("IN")
+                                    .productCode("CAR")
+                                    .statusCode("CANCELLED")
+                                    .amount(5000.0)
+                                    .bookingDate(LocalDate.now())
+                                    .build()
+                    ));
+                }
+            };
+        }
+    }

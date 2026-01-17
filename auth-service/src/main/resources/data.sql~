@@ -1,0 +1,13 @@
+INSERT INTO roles(id, name) VALUES (1, 'ADMIN');
+INSERT INTO permissions(id, name) VALUES (1, 'DASHBOARD_VIEW');
+
+INSERT INTO users(id, username, password, enabled)
+VALUES (
+  1,
+  'admin',
+  '$2a$10$8Q0v6ZKp6YkY0r0ZcZzFQO5Kq9dYcKxFZk9HqZQz2s9xK2Kzv7Q8W',
+  true
+);
+
+INSERT INTO users_roles(user_id, role_id) VALUES (1, 1);
+INSERT INTO roles_permissions(role_id, permission_id) VALUES (1, 1);

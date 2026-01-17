@@ -1,0 +1,32 @@
+package com.enterprise.analytics.auth.controller;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/user")
+public class UserController {
+
+    @GetMapping("/me")
+    public Map<String, Object> currentUser(Authentication authentication) {
+        return Map.of("username", authentication.getName(),
+                "authorities", authentication.getAuthorities());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
+    public String adminOnly() {
+        return "Hello admin!";
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/profile")
+    public String userOnly() {
+        return "Hello User!";
+    }
+}

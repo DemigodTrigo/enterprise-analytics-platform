@@ -1,0 +1,37 @@
+package com.enterprise.analytics.masterdata.controller;
+
+import com.enterprise.analytics.masterdata.contract.AnalyticsFilterCriteria;
+import com.enterprise.analytics.masterdata.response.EAJson;
+import com.enterprise.analytics.masterdata.service.AnalyticsService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/analytics")
+public class AnalyticsController {
+
+
+    private final AnalyticsService service;
+
+    public AnalyticsController(AnalyticsService service) {
+        this.service = service;
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @PostMapping("/revenue-by-product")
+    public EAJson<?> revenueByProduct(@RequestBody AnalyticsFilterCriteria filters) {
+        return EAJson.success(
+                service.revenueByProduct(filters),
+                "Revenue analytics"
+        );
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @GetMapping("/count-by-status")
+    public EAJson<?> countByStatus() {
+        return EAJson.success(
+                service.countByStatus(),
+                "Booking status analytics"
+        );
+    }
+}

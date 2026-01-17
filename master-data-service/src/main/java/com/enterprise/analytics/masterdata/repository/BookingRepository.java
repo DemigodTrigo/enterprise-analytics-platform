@@ -1,0 +1,39 @@
+package com.enterprise.analytics.masterdata.repository;
+
+import com.enterprise.analytics.masterdata.domain.entity.BookingEntity;
+import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
+
+
+    @Query("""
+            SELECT b.productCode, SUM(b.amount)
+            FROM BookingEntity b
+            WHERE (:fromDate IS NULL OR b.bookingDate >= :fromDate)
+              AND (:toDate IS NULL OR b.bookingDate <= :toDate)
+              AND (:product IS NULL OR b.productCode = :product)
+              AND (:status IS NULL OR b.statusCode = :status)
+              AND (:country IS NULL OR b.countryCode = :country)
+            GROUP BY b.productCode
+            """)
+    List<Object[]> revenueByProductFiltered(
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            @Param("product") String product,
+            @Param("status") String status,
+            @Param("country") String country
+    );
+
+    @Query("""
+        SELECT b.statusCode, COUNT(b)
+        FROM BookingEntity b
+        GROUP BY b.statusCode
+    """)
+    List<Object[]> countByStatus();
+
+}

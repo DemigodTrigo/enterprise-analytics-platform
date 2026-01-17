@@ -1,0 +1,25 @@
+package com.enterprise.analytics.masterdata.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ChartScaleService {
+
+    public String detectScale(double maxValue) {
+        if (maxValue >= 1_000_000) return "M";
+        if (maxValue >= 1_000) return "K";
+        return "RAW";
+    }
+
+    public double applyScale(double value, String scale) {
+        return switch (scale) {
+            case "M" -> value / 1_000_000;
+            case "K" -> value / 1_000;
+            default -> value;
+        };
+    }
+
+    public String axisLabel(String base, String scale) {
+        return scale.equals("RAW") ? base : base + " (" + scale + ")";
+    }
+}

@@ -1,0 +1,47 @@
+package com.enterprise.analytics.auth.config;
+
+import com.enterprise.analytics.auth.domain.entity.RoleEntity;
+import com.enterprise.analytics.auth.domain.entity.UserEntity;
+import com.enterprise.analytics.auth.repository.RoleRepository;
+import com.enterprise.analytics.auth.repository.UserRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Set;
+
+@Configuration
+public class DataInitializer {
+
+    @Bean
+    CommandLineRunner initUsers(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder
+    ) {
+        return args -> {
+
+            RoleEntity adminRole = roleRepository.findByName("ADMIN")
+                    .orElseGet(() -> roleRepository.save(
+                            RoleEntity.builder().name("ADMIN").build()
+                    ));
+
+            RoleEntity userRole = roleRepository.findByName("USER")
+                    .orElseGet(() -> roleRepository.save(
+                            RoleEntity.builder().name("USER").build()
+                    ));
+
+
+            userRepository.findByUsername("admin")
+                    .orElseGet(() -> userRepository.save(
+                            UserEntity.builder()
+                                    .username("admin")
+                                    .password(passwordEncoder.encode("password123"))
+                                    .enabled(true)
+                                    .roles(Set.of(adminRole) , userRole)
+                                    .build()
+                    ));
+        };
+    }
+}

@@ -1,0 +1,50 @@
+package com.enterprise.analytics.masterdata.loader;
+
+import com.enterprise.analytics.masterdata.domain.entity.CountryEntity;
+import com.enterprise.analytics.masterdata.repository.CountryRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+
+import java.util.List;
+
+@Configuration
+public class CountryDataLoader {
+
+    private static final String REDIS_KEY = "master:countries";
+
+    @Bean
+    CommandLineRunner loadCountries(
+            CountryRepository countryRepository,
+            MasterCacheService cacheService
+    ) {
+        return args -> {
+
+            insertIfMissing(countryRepository, "IN", "India");
+            insertIfMissing(countryRepository, "US", "United States");
+            insertIfMissing(countryRepository, "UK", "United Kingdom");
+            insertIfMissing(countryRepository, "CA", "Canada");
+
+            cacheService.refreshCountryCache();
+        };
+    }
+
+    private void insertIfMissing(
+            CountryRepository repository,
+            String code,
+            String name
+    ) {
+        repository.findByCode(code)
+                .orElseGet(() ->
+                        repository.save(
+                                CountryEntity.builder()
+                                        .code(code)
+                                        .name(name)
+                                        .active(true)
+                                        .build()
+                        )
+                );
+    }
+}

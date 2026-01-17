@@ -1,0 +1,26 @@
+package com.enterprise.analytics.masterdata.controller;
+
+import com.enterprise.analytics.masterdata.dto.CountryResponse;
+import com.enterprise.analytics.masterdata.service.CountryService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/master/countries")
+public class CountryController {
+
+    private final CountryService countryService;
+
+    public CountryController(CountryService countryService) {
+        this.countryService = countryService;
+    }
+
+    @GetMapping
+    public List<CountryResponse> getCountries() {
+        return countryService.getAllCountries();
+    }
+
+}
